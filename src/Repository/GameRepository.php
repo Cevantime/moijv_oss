@@ -33,9 +33,11 @@ class GameRepository extends ServiceEntityRepository
 
     public function getLatestPaginatedGamesByCategory(Category $category, PaginatorInterface $paginator, $page = 1)
     {
+
         // SELECT g.* FROM App\Entity\Game as g WHERE g.category = :category ORDER BY g.date_add DESC
         $query = $this->createQueryBuilder('g') // SELECT game as g
-            ->where('g.category = :category')
+            ->join('g.categories', 'c')
+            ->where('c.id = :category')
             ->setParameter('category', $category)
             ->orderBy('g.date_add', 'DESC') // ORDER BY g.date_add DESC
             ->getQuery();
