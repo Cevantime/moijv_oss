@@ -32,7 +32,8 @@
         "vich/uploader-bundle": "^1.15"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "^1.9",
+        "symfony/debug-bundle": "5.1.*"
     },
     "config": {
         "optimize-autoloader": true,
