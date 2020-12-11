@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ parent() }}
+    Mettre à jour mon profil
+{% endblock %}
+
+{% block body %}
+    <h2>
+        Mettre à jour mon profil
+    </h2>
+
+    {{ form(profile_form) }}
+{% endblock %}

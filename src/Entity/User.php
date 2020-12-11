@@ -3,9 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Serializable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -16,7 +18,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
  * @UniqueEntity(fields={"email"}, message="There is already an account with this email")
  * @Vich\Uploadable()
  */
-class User implements UserInterface
+class User implements UserInterface, Serializable
 {
     /**
      * @ORM\Id
@@ -86,10 +88,35 @@ class User implements UserInterface
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $updatedAt;
+
     public function __construct()
     {
         $this->games = new ArrayCollection();
         $this->comments = new ArrayCollection();
+    }
+
+    public function serialize()
+    {
+        $result = serialize([
+            'id' => $this->id,
+            'email' => $this->email,
+            'password' => $this->password
+        ]);
+
+        return $result;
+    }
+
+    public function unserialize($serialized)
+    {
+        $result = unserialize($serialized);
+
+        $this->id = $result['id'];
+        $this->email = $result['email'];
+        $this->password = $result['password'];
     }
 
     public function getId(): ?int
@@ -220,7 +247,6 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
-
     }
 
     public function setRoles(array $roles): self
@@ -269,6 +295,11 @@ class User implements UserInterface
     public function setAvatarFile($avatarFile)
     {
         $this->avatarFile = $avatarFile;
+
+        if ($avatarFile !== null) {
+            $this->updatedAt = new DateTime();
+        }
+
         return $this;
     }
 
@@ -298,6 +329,18 @@ class User implements UserInterface
                 $comment->setAuthor(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
