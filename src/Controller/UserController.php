@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\UserType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -15,14 +19,37 @@ class UserController extends AbstractController
      */
     public function details(User $user = null): Response
     {
-        $user ??= $this->getUser();
+        $user = $user ?? $this->getUser();
 
-        if( ! $user) {
+        if (!$user) {
             return $this->redirectToRoute('login');
         }
 
         return $this->render('user/details.html.twig', [
             'user' => $user
         ]);
+    }
+
+    /**
+     * @Route("/profile/update", name="update_profile")
+     * @IsGranted("IS_AUTHENTICATED_FULLY")
+     */
+    public function updateProfile(Request $request, EntityManagerInterface $entityManager)
+    {
+        $user = $this->getUser();
+        $form = $this->createForm(UserType::class, $user);
+
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted()) {
+            return $this->render('user/update_user.html.twig', [
+                'user_form' => $form->createView()
+            ]);
+        }
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('profile');
     }
 }

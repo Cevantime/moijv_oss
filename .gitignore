@@ -9,3 +9,5 @@
 /vendor/
 /.idea/
 ###< symfony/framework-bundle ###
+/public/avatar
+/composer.phar
