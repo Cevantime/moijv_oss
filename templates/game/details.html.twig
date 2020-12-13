@@ -1,10 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} Détails du jeu {{ game.name }}{% endblock %}
+{% block title %}
+	{{ parent() }}
+	Détails du jeu
+	{{ game.name }}
+{% endblock %}
 
 {% block body %}
-    <h1 class="my-4">{{ game.name }}</h1>
-    <p>{{ game.description }}</p>
-    <a class="btn btn-success" href="{{ path('home') }}">Revenir à la page d'accueil</a>
-    <a class="btn btn-info" href="{{ path('user_details', { id : game.user.id }) }}">Voir l'utilisateur du jeu</a>
+	<h1 class="my-4">{{ game.name }}</h1>
+	<p>{{ game.description }}</p>
+	<a class="btn btn-success" href="{{ path('home') }}">Revenir à la page d'accueil</a>
+	<a class="btn btn-info" href="{{ path('user_details', { id : game.user.id }) }}">Voir l'utilisateur du jeu</a>
+	{% if app.user != null and game.user.id == app.user.id %}
+		<a class="btn btn-primary" href="{{ path('game_edit', { id: game.id }) }}">Modifier</a>
+	{% endif %}
+
 {% endblock %}
