@@ -15,7 +15,7 @@ class UserController extends AbstractController
      */
     public function details(User $user = null): Response
     {
-        $user ??= $this->getUser();
+        $user = $this->getUser();
 
         if( ! $user) {
             return $this->redirectToRoute('login');

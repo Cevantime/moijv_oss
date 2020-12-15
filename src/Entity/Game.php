@@ -48,21 +48,22 @@ class Game
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="games")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $category;
+    
 
     /**
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="game", orphanRemoval=true)
      */
     private $comments;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Category::class, mappedBy="games")
+     */
+    private $categories;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +168,33 @@ class Game
             if ($comment->getGame() === $this) {
                 $comment->setGame(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+            $category->addGame($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeGame($this);
         }
 
         return $this;

@@ -20,7 +20,7 @@ class Category
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=30)
+     * @ORM\Column(type="string", length=255)
      */
     private $name;
 
@@ -30,7 +30,7 @@ class Category
     private $slug;
 
     /**
-     * @ORM\OneToMany(targetEntity=Game::class, mappedBy="category")
+     * @ORM\ManyToMany(targetEntity=Game::class, inversedBy="categories")
      */
     private $games;
 
@@ -80,7 +80,6 @@ class Category
     {
         if (!$this->games->contains($game)) {
             $this->games[] = $game;
-            $game->setCategory($this);
         }
 
         return $this;
@@ -88,12 +87,7 @@ class Category
 
     public function removeGame(Game $game): self
     {
-        if ($this->games->removeElement($game)) {
-            // set the owning side to null (unless already changed)
-            if ($game->getCategory() === $this) {
-                $game->setCategory(null);
-            }
-        }
+        $this->games->removeElement($game);
 
         return $this;
     }
